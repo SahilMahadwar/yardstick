@@ -12,6 +12,7 @@ import {
 import { CreateTransactionRequest, Transaction } from "@/types/transaction";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 import { TransactionForm } from "./transaction-form";
 
 interface TransactionFormDialogProps {
@@ -49,15 +50,22 @@ export function TransactionFormDialog({
         body: JSON.stringify(data),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to save transaction");
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Failed to save transaction");
       }
 
+      toast.success(
+        transaction
+          ? "Transaction updated successfully"
+          : "Transaction added successfully"
+      );
       router.refresh();
       setOpen(false);
     } catch (error) {
       console.error("Error saving transaction:", error);
-      // You might want to show an error toast here
+      toast.error(error instanceof Error ? error.message : "An error occurred");
     } finally {
       setIsSubmitting(false);
     }
