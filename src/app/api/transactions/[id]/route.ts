@@ -69,7 +69,11 @@ export async function PUT(
     }
 
     const json = await request.json();
-    const validatedData = transactionSchema.partial().parse(json);
+
+    // Convert date string to Date object if present
+    const data = json.date ? { ...json, date: new Date(json.date) } : json;
+
+    const validatedData = transactionSchema.partial().parse(data);
 
     await dbConnect();
     const transaction = await Transaction.findByIdAndUpdate(id, validatedData, {

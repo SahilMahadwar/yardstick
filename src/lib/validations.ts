@@ -13,7 +13,7 @@ export const transactionSchema = z.object({
     })
     .min(3, "Description must be at least 3 characters")
     .max(100, "Description must not exceed 100 characters"),
-  date: z.date({
+  date: z.coerce.date({
     required_error: "Date is required",
     invalid_type_error: "Invalid date format",
   }),

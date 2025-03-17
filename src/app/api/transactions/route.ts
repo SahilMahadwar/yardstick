@@ -29,8 +29,14 @@ export async function POST(request: NextRequest): Promise<Response> {
   try {
     const json = await request.json();
 
+    // Convert date string to Date object before validation
+    const data = {
+      ...json,
+      date: json.date ? new Date(json.date) : new Date(),
+    };
+
     // Validate request body
-    const validatedData = transactionSchema.parse(json);
+    const validatedData = transactionSchema.parse(data);
 
     await dbConnect();
     const transaction = await Transaction.create(validatedData);
