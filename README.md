@@ -1,36 +1,121 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Personal Finance Tracker
+
+A Next.js application for tracking personal finances with MongoDB integration.
+
+## Features
+
+- Add/Edit/Delete transactions
+- Transaction list view with sorting
+- Form validation with Zod
+- Modern UI with shadcn/ui
+- Toast notifications for user feedback
+- Responsive design with error states
+
+## Prerequisites
+
+- Node.js 18 or later
+- MongoDB instance running locally or connection string to MongoDB Atlas
+- npm or pnpm package manager
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository:
+
+```bash
+git clone <repository-url>
+cd personal-finance-tracker
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+# or
+pnpm install
+```
+
+3. Set up environment variables:
+   Create a `.env.local` file in the root directory with the following variables:
+
+```env
+MONGODB_URI=your_mongodb_connection_string
+```
+
+4. Run the development server:
 
 ```bash
 npm run dev
 # or
-yarn dev
-# or
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Testing the Application
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Add a new transaction:
 
-## Learn More
+   - Click the "Add Transaction" button
+   - Fill in the amount, description, and date
+   - Click "Add Transaction" to save
+   - You should see a success toast notification
 
-To learn more about Next.js, take a look at the following resources:
+2. View transactions:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   - All transactions are listed on the main page
+   - Transactions are sorted by date (newest first)
+   - Each transaction shows amount, description, and date
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. Edit a transaction:
 
-## Deploy on Vercel
+   - Click the pencil icon on any transaction
+   - Modify the details in the form
+   - Click "Update Transaction" to save changes
+   - You should see a success toast notification
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4. Delete a transaction:
+   - Click the trash icon on any transaction
+   - The transaction will be removed immediately
+   - You should see a success toast notification
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Tech Stack
+
+- **Framework:** Next.js 14 with App Router
+- **Database:** MongoDB with Mongoose
+- **UI Components:** shadcn/ui
+- **Form Handling:** react-hook-form
+- **Validation:** Zod
+- **Styling:** Tailwind CSS
+- **Icons:** Lucide Icons
+
+## Project Structure
+
+```
+src/
+├── app/                  # App router pages and API routes
+├── components/          # React components
+│   ├── forms/          # Form components
+│   └── ui/             # UI components from shadcn/ui
+├── lib/                # Utility functions and configurations
+├── models/            # MongoDB schemas
+└── types/             # TypeScript type definitions
+```
+
+## Error Handling
+
+The application includes comprehensive error handling:
+
+- Form validation errors with clear messages
+- API error responses with appropriate status codes
+- Toast notifications for user feedback
+- Loading states during API calls
+- Error states for failed data fetches
+
+## Future Enhancements
+
+- Monthly expenses bar chart using Recharts
+- Category-based filtering
+- Date range filtering
+- Export transactions to CSV
+- Dark mode support
+- Mobile-responsive optimizations
