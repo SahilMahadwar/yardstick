@@ -1,9 +1,12 @@
 "use client";
 
 import { TransactionFormDialog } from "@/components/forms/transaction-form-dialog";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Transaction } from "@/types/transaction";
+import { Pencil, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function TestPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -28,8 +31,30 @@ export default function TestPage() {
     } catch (err) {
       console.error("Error fetching transactions:", err);
       setError(err instanceof Error ? err.message : "An error occurred");
+      toast.error("Failed to load transactions");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      const response = await fetch(`/api/transactions/${id}`, {
+        method: "DELETE",
+      });
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.error || "Failed to delete transaction");
+      }
+
+      toast.success("Transaction deleted successfully");
+      fetchTransactions();
+    } catch (err) {
+      console.error("Error deleting transaction:", err);
+      toast.error(
+        err instanceof Error ? err.message : "Failed to delete transaction"
+      );
     }
   };
 
@@ -70,7 +95,7 @@ export default function TestPage() {
                 {transactions.map((transaction) => (
                   <div
                     key={transaction._id}
-                    className="flex items-center justify-between p-4 border rounded-lg"
+                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
                   >
                     <div>
                       <p className="font-medium">{transaction.description}</p>
@@ -78,8 +103,27 @@ export default function TestPage() {
                         {new Date(transaction.date).toLocaleDateString()}
                       </p>
                     </div>
-                    <div className="font-mono">
-                      ${transaction.amount.toFixed(2)}
+                    <div className="flex items-center gap-4">
+                      <p className="font-mono font-medium">
+                        ${transaction.amount.toFixed(2)}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <TransactionFormDialog
+                          transaction={transaction}
+                          trigger={
+                            <Button size="icon" variant="ghost">
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                          }
+                        />
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => handleDelete(transaction._id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 ))}
