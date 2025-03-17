@@ -1,5 +1,6 @@
 "use client";
 
+import { MonthlyExpensesChart } from "@/components/charts/monthly-expenses-chart";
 import { TransactionFormDialog } from "@/components/forms/transaction-form-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -63,7 +64,7 @@ export default function TestPage() {
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-4">Personal Finance Tracker</h1>
         <p className="text-muted-foreground">
-          Test page for transaction management
+          Track and manage your personal finances
         </p>
       </div>
 
@@ -76,6 +77,10 @@ export default function TestPage() {
             </div>
           </CardHeader>
         </Card>
+
+        {!loading && !error && transactions.length > 0 && (
+          <MonthlyExpensesChart transactions={transactions} />
+        )}
 
         <Card>
           <CardHeader>
