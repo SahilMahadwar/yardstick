@@ -1,4 +1,9 @@
+import { TransactionCategory } from "@/types/transaction";
 import { z } from "zod";
+
+// Convert enum to union type for Zod
+const categoryValues = Object.values(TransactionCategory);
+type CategoryType = (typeof categoryValues)[number];
 
 export const transactionSchema = z.object({
   amount: z
@@ -16,6 +21,10 @@ export const transactionSchema = z.object({
   date: z.coerce.date({
     required_error: "Date is required",
     invalid_type_error: "Invalid date format",
+  }),
+  category: z.enum(categoryValues as [CategoryType, ...CategoryType[]], {
+    required_error: "Category is required",
+    invalid_type_error: "Invalid category",
   }),
 });
 

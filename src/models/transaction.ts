@@ -1,9 +1,11 @@
+import { TransactionCategory } from "@/types/transaction";
 import { Schema, model, models } from "mongoose";
 
 export interface ITransaction {
   amount: number;
   description: string;
   date: Date;
+  category: TransactionCategory;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -27,11 +29,23 @@ const transactionSchema = new Schema<ITransaction>(
       required: [true, "Date is required"],
       default: Date.now,
     },
+    category: {
+      type: String,
+      required: [true, "Category is required"],
+      enum: {
+        values: Object.values(TransactionCategory),
+        message: "Invalid category",
+      },
+      default: TransactionCategory.OTHER,
+    },
   },
   {
     timestamps: true,
   }
 );
+
+// Index for faster category-based queries and aggregations
+transactionSchema.index({ category: 1, date: -1 });
 
 export const Transaction =
   models.Transaction || model<ITransaction>("Transaction", transactionSchema);
