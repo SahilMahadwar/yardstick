@@ -23,7 +23,9 @@ import { toast } from "sonner";
 
 export default function DashboardPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [summary, setSummary] = useState<TransactionSummary | null>(null);
+  const [summary, setSummary] = useState<TransactionSummary | undefined>(
+    undefined
+  );
   const [categoryData, setCategoryData] = useState<CategoryBreakdown[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -113,10 +115,10 @@ export default function DashboardPage() {
       <main className="max-w-[1200px] mx-auto px-6 py-8">
         <div className="space-y-10">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <TotalExpensesCard summary={summary ?? undefined} />
-            <AverageExpenseCard summary={summary ?? undefined} />
-            <LargestExpenseCard summary={summary ?? undefined} />
-            <FrequentCategoryCard summary={summary ?? undefined} />
+            <TotalExpensesCard summary={summary} />
+            <AverageExpenseCard summary={summary} />
+            <LargestExpenseCard summary={summary} />
+            <FrequentCategoryCard summary={summary} />
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">

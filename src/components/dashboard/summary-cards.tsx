@@ -5,7 +5,7 @@ import { CategoryBreakdown, TransactionSummary } from "@/types/transaction";
 import { BarChart3, IndianRupee, TrendingUp, Wallet } from "lucide-react";
 
 interface SummaryCardsProps {
-  summary: TransactionSummary;
+  summary: TransactionSummary | undefined;
 }
 
 export function TotalExpensesCard({ summary }: SummaryCardsProps) {
@@ -17,10 +17,10 @@ export function TotalExpensesCard({ summary }: SummaryCardsProps) {
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">
-          ₹{summary.totalAmount.toFixed(2)}
+          ₹{summary?.totalAmount.toFixed(2)}
         </div>
         <p className="text-xs text-muted-foreground">
-          {summary.totalTransactions} transactions
+          {summary?.totalTransactions} transactions
         </p>
       </CardContent>
     </Card>
@@ -36,7 +36,7 @@ export function AverageExpenseCard({ summary }: SummaryCardsProps) {
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">
-          ₹{summary.averageAmount.toFixed(2)}
+          ₹{summary?.averageAmount.toFixed(2)}
         </div>
         <p className="text-xs text-muted-foreground">Per transaction</p>
       </CardContent>
@@ -53,10 +53,10 @@ export function LargestExpenseCard({ summary }: SummaryCardsProps) {
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">
-          ₹{summary.largestTransaction.amount.toFixed(2)}
+          ₹{summary?.largestTransaction.amount.toFixed(2)}
         </div>
         <p className="text-xs text-muted-foreground">
-          {summary.largestTransaction.category}
+          {summary?.largestTransaction.category}
         </p>
       </CardContent>
     </Card>
@@ -73,7 +73,9 @@ export function FrequentCategoryCard({ summary }: SummaryCardsProps) {
         <Wallet className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">{summary.mostFrequentCategory}</div>
+        <div className="text-2xl font-bold">
+          {summary?.mostFrequentCategory}
+        </div>
         <p className="text-xs text-muted-foreground">
           Most transactions in this category
         </p>
