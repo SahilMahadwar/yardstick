@@ -5,12 +5,18 @@ import { TransactionApiResponse } from "@/types/transaction";
 import { isValidObjectId } from "mongoose";
 import { NextRequest } from "next/server";
 
+type Props = {
+  params: Promise<{
+    id: string;
+  }>;
+};
+
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  props: Props
 ): Promise<Response> {
   try {
-    const { id } = params;
+    const { id } = await props.params;
 
     if (!isValidObjectId(id)) {
       return Response.json(
@@ -53,10 +59,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  props: Props
 ): Promise<Response> {
   try {
-    const { id } = params;
+    const { id } = await props.params;
 
     if (!isValidObjectId(id)) {
       return Response.json(
@@ -120,10 +126,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  props: Props
 ): Promise<Response> {
   try {
-    const { id } = params;
+    const { id } = await props.params;
 
     if (!isValidObjectId(id)) {
       return Response.json(

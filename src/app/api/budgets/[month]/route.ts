@@ -6,22 +6,23 @@ import { BudgetApiResponse } from "@/types/budget";
 import { NextRequest } from "next/server";
 import { ZodError } from "zod";
 
-interface RouteParams {
-  params: {
+type Props = {
+  params: Promise<{
     month: string;
-  };
-}
+  }>;
+};
 
 // GET /api/budgets/[month] - Get a specific month's budget
 export async function GET(
   request: NextRequest,
-  { params }: RouteParams
+  props: Props
 ): Promise<Response> {
   try {
     await dbConnect();
+    const { month } = await props.params;
 
     const budget = await Budget.findOne({
-      month: params.month,
+      month,
     });
 
     if (!budget) {
@@ -53,13 +54,15 @@ export async function GET(
 // PUT /api/budgets/[month] - Update a month's budget
 export async function PUT(
   request: NextRequest,
-  { params }: RouteParams
+  props: Props
 ): Promise<Response> {
   try {
     await dbConnect();
 
+    const { month } = await props.params;
+
     const budget = await Budget.findOne({
-      month: params.month,
+      month,
     });
 
     if (!budget) {
@@ -79,7 +82,7 @@ export async function PUT(
     budget.categories = data.categories;
 
     // Recalculate spent amounts based on transactions
-    const startOfMonth = new Date(params.month + "-01");
+    const startOfMonth = new Date(month + "-01");
     const endOfMonth = new Date(
       new Date(startOfMonth).setMonth(startOfMonth.getMonth() + 1)
     );
@@ -123,13 +126,15 @@ export async function PUT(
 // DELETE /api/budgets/[month] - Delete a month's budget
 export async function DELETE(
   request: NextRequest,
-  { params }: RouteParams
+  props: Props
 ): Promise<Response> {
   try {
     await dbConnect();
 
+    const { month } = await props.params;
+
     const budget = await Budget.findOne({
-      month: params.month,
+      month,
     });
 
     if (!budget) {
