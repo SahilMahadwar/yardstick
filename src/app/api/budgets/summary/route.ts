@@ -127,6 +127,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       totalBudget: plainBudget.totalBudget,
       totalSpent: plainBudget.totalSpent,
       remainingBudget: plainBudget.totalBudget - plainBudget.totalSpent,
+      categories: plainBudget.categories,
       overBudgetCategories,
       nearLimitCategories,
       insights,

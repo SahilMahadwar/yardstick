@@ -20,11 +20,7 @@ export default function InsightsPage() {
       const data = await response.json();
 
       if (data.success && data.data?.summary) {
-        setCategories(
-          data.data.summary.overBudgetCategories.concat(
-            data.data.summary.nearLimitCategories
-          )
-        );
+        setCategories(data.data.summary.categories);
         setInsights(data.data.summary.insights);
       }
     } catch (error) {

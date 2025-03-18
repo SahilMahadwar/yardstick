@@ -162,7 +162,7 @@ export default function DashboardPage() {
                       </div>
                       <div className="flex items-center gap-4">
                         <p className="font-mono font-medium">
-                          ${transaction.amount.toFixed(2)}
+                          ₹{transaction.amount.toFixed(2)}
                         </p>
                         <div className="flex items-center gap-2">
                           <TransactionFormDialog
