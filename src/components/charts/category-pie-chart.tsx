@@ -30,6 +30,7 @@ export function CategoryPieChart({ data }: CategoryPieChartProps) {
   const chartData = data.map((item) => ({
     name: item.category,
     value: item.totalAmount,
+    percentage: item.percentage,
   }));
 
   return (
@@ -61,10 +62,9 @@ export function CategoryPieChart({ data }: CategoryPieChartProps) {
                 content={({ active, payload }) => {
                   if (!active || !payload?.length) return null;
 
-                  const data = payload[0];
+                  const data = payload[0].payload;
                   const category = data.name as TransactionCategory;
                   const amount = data.value as number;
-                  const breakdown = data.payload as CategoryBreakdown;
 
                   return (
                     <div className="rounded-lg border bg-background p-2 shadow-sm">
@@ -90,7 +90,7 @@ export function CategoryPieChart({ data }: CategoryPieChartProps) {
                               Percentage
                             </p>
                             <p className="font-medium">
-                              {breakdown.percentage.toFixed(1)}%
+                              {data.percentage.toFixed(1)}%
                             </p>
                           </div>
                         </div>
