@@ -11,6 +11,7 @@ import {
 import { TransactionFormDialog } from "@/components/forms/transaction-form-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Navbar } from "@/components/ui/navbar";
 import {
   CategoryBreakdown,
   Transaction,
@@ -28,12 +29,15 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchDashboardData();
+    fetchDashboardData(true);
   }, []);
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = async (isInitialLoad = false) => {
     try {
-      setLoading(true);
+      if (isInitialLoad) {
+        setLoading(true);
+      }
+
       const [transactionsRes, summaryRes] = await Promise.all([
         fetch("/api/transactions"),
         fetch("/api/transactions/summary"),
@@ -56,9 +60,13 @@ export default function DashboardPage() {
     } catch (err) {
       console.error("Error fetching dashboard data:", err);
       setError(err instanceof Error ? err.message : "An error occurred");
-      toast.error("Failed to load dashboard data");
+      if (!isInitialLoad) {
+        toast.error("Failed to refresh dashboard data");
+      }
     } finally {
-      setLoading(false);
+      if (isInitialLoad) {
+        setLoading(false);
+      }
     }
   };
 
@@ -74,7 +82,7 @@ export default function DashboardPage() {
       }
 
       toast.success("Transaction deleted successfully");
-      fetchDashboardData();
+      fetchDashboardData(false);
     } catch (err) {
       console.error("Error deleting transaction:", err);
       toast.error(
@@ -84,107 +92,114 @@ export default function DashboardPage() {
   };
 
   if (loading) {
-    return <div className="text-center p-8">Loading dashboard...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen text-muted-foreground">
+        Loading dashboard...
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div className="text-center p-8 text-red-500">
+      <div className="flex items-center justify-center min-h-screen text-red-500">
         Error loading dashboard: {error}
       </div>
     );
   }
 
   return (
-    <main className="container mx-auto p-4">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-4">Personal Finance Tracker</h1>
-        <p className="text-muted-foreground">
-          Track and manage your personal finances
-        </p>
-      </div>
-
-      <div className="grid gap-6">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {summary && (
-            <>
-              <TotalExpensesCard summary={summary} />
-              <AverageExpenseCard summary={summary} />
-              <LargestExpenseCard summary={summary} />
-              <FrequentCategoryCard summary={summary} />
-            </>
-          )}
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          {transactions.length > 0 && (
-            <>
-              <MonthlyExpensesChart transactions={transactions} />
-              {categoryData.length > 0 && (
-                <CategoryPieChart data={categoryData} />
-              )}
-            </>
-          )}
-        </div>
-
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Transactions</CardTitle>
-              <TransactionFormDialog />
-            </div>
-          </CardHeader>
-          <CardContent>
-            {transactions.length === 0 ? (
-              <div className="text-center p-4 text-muted-foreground">
-                No transactions found. Add one to get started!
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {transactions.map((transaction) => (
-                  <div
-                    key={transaction._id}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
-                  >
-                    <div className="grid gap-1">
-                      <p className="font-medium">{transaction.description}</p>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <span>
-                          {new Date(transaction.date).toLocaleDateString()}
-                        </span>
-                        <span>•</span>
-                        <span>{transaction.category}</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <p className="font-mono font-medium">
-                        ${transaction.amount.toFixed(2)}
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <TransactionFormDialog
-                          transaction={transaction}
-                          trigger={
-                            <Button size="icon" variant="ghost">
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                          }
-                        />
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          onClick={() => handleDelete(transaction._id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+    <div className="min-h-screen bg-gradient-to-br from-background to-accent/5">
+      <Navbar />
+      <main className="max-w-[1200px] mx-auto px-6 py-8">
+        <div className="space-y-10">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {summary && (
+              <>
+                <TotalExpensesCard summary={summary} />
+                <AverageExpenseCard summary={summary} />
+                <LargestExpenseCard summary={summary} />
+                <FrequentCategoryCard summary={summary} />
+              </>
             )}
-          </CardContent>
-        </Card>
-      </div>
-    </main>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2">
+            {transactions.length > 0 && (
+              <>
+                <MonthlyExpensesChart transactions={transactions} />
+
+                {categoryData.length > 0 && (
+                  <CategoryPieChart data={categoryData} />
+                )}
+              </>
+            )}
+          </div>
+
+          <Card className="backdrop-blur-sm bg-card/50">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle>Recent Transactions</CardTitle>
+                <TransactionFormDialog onSuccess={fetchDashboardData} />
+              </div>
+            </CardHeader>
+            <CardContent>
+              {transactions.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  No transactions found. Add one to get started!
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {transactions.map((transaction) => (
+                    <div
+                      key={transaction._id}
+                      className="flex items-center justify-between p-4 rounded-lg border border-border/50 backdrop-blur-sm hover:bg-accent/5 transition-colors"
+                    >
+                      <div className="grid gap-1">
+                        <p className="font-medium">{transaction.description}</p>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <span>
+                            {new Date(transaction.date).toLocaleDateString()}
+                          </span>
+                          <span>•</span>
+                          <span>{transaction.category}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <p className="font-mono font-medium">
+                          ${transaction.amount.toFixed(2)}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <TransactionFormDialog
+                            transaction={transaction}
+                            onSuccess={fetchDashboardData}
+                            trigger={
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="hover:bg-accent/10"
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                            }
+                          />
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="hover:bg-accent/10"
+                            onClick={() => handleDelete(transaction._id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    </div>
   );
 }

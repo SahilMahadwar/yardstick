@@ -20,6 +20,7 @@ interface TransactionFormDialogProps {
   trigger?: React.ReactNode;
   title?: string;
   description?: string;
+  onSuccess?: () => void;
 }
 
 export function TransactionFormDialog({
@@ -29,6 +30,7 @@ export function TransactionFormDialog({
   description = transaction
     ? "Edit your transaction details below."
     : "Add a new transaction to track your finances.",
+  onSuccess,
 }: TransactionFormDialogProps) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -63,6 +65,7 @@ export function TransactionFormDialog({
       );
       router.refresh();
       setOpen(false);
+      onSuccess?.();
     } catch (error) {
       console.error("Error saving transaction:", error);
       toast.error(error instanceof Error ? error.message : "An error occurred");
