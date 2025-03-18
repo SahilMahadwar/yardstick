@@ -49,6 +49,7 @@ export type BudgetSummary = {
   remainingBudget: number;
   overBudgetCategories: CategoryBudget[];
   nearLimitCategories: CategoryBudget[];
+  insights: BudgetInsight[];
 };
 
 export type BudgetProgress = {

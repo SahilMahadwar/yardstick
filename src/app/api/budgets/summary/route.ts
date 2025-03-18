@@ -1,12 +1,13 @@
 import dbConnect from "@/lib/db";
+import { toPlainObject } from "@/lib/utils";
 import { Budget } from "@/models/budget";
 import { Transaction } from "@/models/transaction";
 import {
   BudgetApiResponse,
   BudgetInsight,
+  Budget as BudgetType,
   CategoryBudget,
 } from "@/types/budget";
-import { TransactionCategory } from "@/types/transaction";
 import { format } from "date-fns";
 import { NextRequest } from "next/server";
 
@@ -45,14 +46,20 @@ export async function GET(request: NextRequest): Promise<Response> {
     });
 
     await budget.updateSpentAmounts(transactions);
+    await budget.save();
+
+    const plainBudget = toPlainObject<BudgetType>(budget);
+    if (!plainBudget) {
+      throw new Error("Failed to process budget data");
+    }
 
     // Identify over-budget and near-limit categories
-    const overBudgetCategories = budget.categories.filter(
-      (cat: CategoryBudget) => cat.spent > cat.amount
+    const overBudgetCategories = plainBudget.categories.filter(
+      (cat) => cat.spent > cat.amount
     );
 
-    const nearLimitCategories = budget.categories.filter(
-      (cat: CategoryBudget) =>
+    const nearLimitCategories = plainBudget.categories.filter(
+      (cat) =>
         cat.spent <= cat.amount &&
         cat.spent >= cat.amount * NEAR_LIMIT_THRESHOLD
     );
@@ -60,7 +67,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     const insights: BudgetInsight[] = [];
 
     // Over budget warnings
-    overBudgetCategories.forEach((cat: CategoryBudget) => {
+    overBudgetCategories.forEach((cat) => {
       insights.push({
         type: "warning",
         message: `${cat.category} spending is over budget`,
@@ -74,7 +81,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     });
 
     // Near limit warnings
-    nearLimitCategories.forEach((cat: CategoryBudget) => {
+    nearLimitCategories.forEach((cat) => {
       insights.push({
         type: "info",
         message: `${cat.category} spending is near budget limit`,
@@ -88,8 +95,8 @@ export async function GET(request: NextRequest): Promise<Response> {
     });
 
     // Top spending categories
-    const topCategories = [...budget.categories]
-      .sort((a: CategoryBudget, b: CategoryBudget) => b.spent - a.spent)
+    const topCategories = [...plainBudget.categories]
+      .sort((a, b) => b.spent - a.spent)
       .slice(0, 3);
 
     insights.push({
@@ -100,7 +107,8 @@ export async function GET(request: NextRequest): Promise<Response> {
     });
 
     // Budget utilization insight
-    const totalUtilization = (budget.totalSpent / budget.totalBudget) * 100;
+    const totalUtilization =
+      (plainBudget.totalSpent / plainBudget.totalBudget) * 100;
     insights.push({
       type: totalUtilization > 90 ? "warning" : "info",
       message:
@@ -108,17 +116,17 @@ export async function GET(request: NextRequest): Promise<Response> {
           ? "Overall budget utilization is very high"
           : `Overall budget utilization is ${totalUtilization.toFixed(1)}%`,
       details: {
-        current: budget.totalSpent,
-        limit: budget.totalBudget,
-        remaining: budget.totalBudget - budget.totalSpent,
+        current: plainBudget.totalSpent,
+        limit: plainBudget.totalBudget,
+        remaining: plainBudget.totalBudget - plainBudget.totalSpent,
       },
     });
 
     // Prepare summary response
     const summary = {
-      totalBudget: budget.totalBudget,
-      totalSpent: budget.totalSpent,
-      remainingBudget: budget.totalBudget - budget.totalSpent,
+      totalBudget: plainBudget.totalBudget,
+      totalSpent: plainBudget.totalSpent,
+      remainingBudget: plainBudget.totalBudget - plainBudget.totalSpent,
       overBudgetCategories,
       nearLimitCategories,
       insights,

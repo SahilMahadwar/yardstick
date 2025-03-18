@@ -1,4 +1,5 @@
 import dbConnect from "@/lib/db";
+import { toPlainObject } from "@/lib/utils";
 import { createBudgetSchema, formatZodError } from "@/lib/validations/budget";
 import { Budget } from "@/models/budget";
 import { Transaction } from "@/models/transaction";
@@ -19,17 +20,17 @@ export async function GET(request: NextRequest): Promise<Response> {
     if (current) {
       // Get current month's budget
       const currentMonth = format(new Date(), "yyyy-MM");
-      budgets = await Budget.findOne({ month: currentMonth });
+      const budget = await Budget.findOne({ month: currentMonth });
+      budgets = budget ? [toPlainObject(budget)] : [];
     } else {
       // Get all budgets
-      budgets = await Budget.find().sort({ month: -1 });
+      const allBudgets = await Budget.find().sort({ month: -1 });
+      budgets = toPlainObject(allBudgets);
     }
 
     return Response.json({
       success: true,
-      data: {
-        budgets: Array.isArray(budgets) ? budgets : [budgets].filter(Boolean),
-      },
+      data: { budgets },
     } as BudgetApiResponse);
   } catch (error) {
     console.error("Failed to fetch budgets:", error);
@@ -63,8 +64,18 @@ export async function POST(request: NextRequest): Promise<Response> {
       );
     }
 
-    // Create new budget
-    const budget = await Budget.create(data);
+    // Calculate total budget
+    const totalBudget = data.categories.reduce(
+      (sum, category) => sum + category.amount,
+      0
+    );
+
+    // Create new budget with total
+    const budget = await Budget.create({
+      ...data,
+      totalBudget,
+      totalSpent: 0,
+    });
 
     // Update spent amounts based on existing transactions
     const startOfMonth = new Date(data.month + "-01");
@@ -80,10 +91,14 @@ export async function POST(request: NextRequest): Promise<Response> {
     });
 
     await budget.updateSpentAmounts(transactions);
+    await budget.save();
+
+    // Convert to plain object before sending response
+    const plainBudget = toPlainObject(budget);
 
     return Response.json({
       success: true,
-      data: { budget },
+      data: { budget: plainBudget },
     } as BudgetApiResponse);
   } catch (error) {
     console.error("Failed to create budget:", error);
