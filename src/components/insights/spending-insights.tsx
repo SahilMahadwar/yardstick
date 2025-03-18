@@ -35,9 +35,9 @@ function InsightItem({ insight }: { insight: BudgetInsight }) {
         <p className="font-medium">{insight.message}</p>
         {insight.details && (
           <div className="text-sm text-muted-foreground">
-            <p>Current: ${insight.details.current.toFixed(2)}</p>
-            <p>Limit: ${insight.details.limit.toFixed(2)}</p>
-            <p>Remaining: ${insight.details.remaining.toFixed(2)}</p>
+            <p>Current: ₹{insight.details.current.toFixed(2)}</p>
+            <p>Limit: ₹{insight.details.limit.toFixed(2)}</p>
+            <p>Remaining: ₹{insight.details.remaining.toFixed(2)}</p>
           </div>
         )}
       </div>

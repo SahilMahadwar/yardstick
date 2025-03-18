@@ -156,7 +156,7 @@ export function BudgetForm({
                         <Input
                           type="number"
                           step="0.01"
-                          placeholder="Enter budget amount"
+                          placeholder="Enter budget amount (₹)"
                           value={field.value.amount}
                           onChange={(e) =>
                             field.onChange({

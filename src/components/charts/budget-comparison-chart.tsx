@@ -40,10 +40,10 @@ export function BudgetComparisonChart({
             stroke="#888888"
             tickLine={false}
             axisLine={false}
-            tickFormatter={(value) => `$${value}`}
+            tickFormatter={(value) => `₹${value}`}
           />
           <Tooltip
-            formatter={(value: number) => [`$${value}`, ""]}
+            formatter={(value: number) => [`₹${value}`, ""]}
             cursor={{ fill: "transparent" }}
           />
           <Legend />

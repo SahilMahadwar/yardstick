@@ -74,7 +74,7 @@ export function MonthlyExpensesChart({
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={(value) => `$${value}`}
+                tickFormatter={(value) => `₹${value}`}
               />
               <Tooltip
                 content={({
@@ -101,7 +101,7 @@ export function MonthlyExpensesChart({
                             Total
                           </span>
                           <span className="font-bold">
-                            ${data.total.toFixed(2)}
+                            ₹{data.total.toFixed(2)}
                           </span>
                         </div>
                       </div>

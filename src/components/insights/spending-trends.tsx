@@ -70,9 +70,9 @@ export function SpendingTrends({ data, className }: SpendingTrendsProps) {
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
-              <YAxis tickFormatter={(value) => `$${value}`} />
+              <YAxis tickFormatter={(value) => `₹${value}`} />
               <Tooltip
-                formatter={(value: number) => [`$${value.toFixed(2)}`, ""]}
+                formatter={(value: number) => [`₹${value.toFixed(2)}`, ""]}
               />
               <Legend />
               {categories.map((category, index) => (
@@ -112,7 +112,7 @@ export function SpendingTrends({ data, className }: SpendingTrendsProps) {
                 <div>
                   <p className="font-medium">{category}</p>
                   <p className="text-sm text-muted-foreground">
-                    ${currentSpent.toFixed(2)} this month
+                    ₹{currentSpent.toFixed(2)} this month
                   </p>
                 </div>
                 <div

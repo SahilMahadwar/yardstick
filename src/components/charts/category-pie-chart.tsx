@@ -83,7 +83,7 @@ export function CategoryPieChart({ data }: CategoryPieChartProps) {
                             <p className="text-sm text-muted-foreground">
                               Amount
                             </p>
-                            <p className="font-medium">${amount.toFixed(2)}</p>
+                            <p className="font-medium">₹{amount.toFixed(2)}</p>
                           </div>
                           <div>
                             <p className="text-sm text-muted-foreground">
