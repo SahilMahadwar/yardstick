@@ -17,7 +17,7 @@ import {
   Transaction,
   TransactionSummary,
 } from "@/types/transaction";
-import { Pencil, Trash2 } from "lucide-react";
+import { Loader, Pencil, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -95,7 +95,8 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen text-muted-foreground">
+      <div className="flex flex-col items-center justify-center min-h-screen text-muted-foreground gap-4">
+        <Loader className="w-8 h-8 animate-spin" />
         Loading dashboard...
       </div>
     );

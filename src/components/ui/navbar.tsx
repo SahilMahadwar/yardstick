@@ -1,8 +1,12 @@
 import { ArrowRight, PieChart } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Button } from "./button";
 
 export function Navbar() {
+  const pathname = usePathname();
+  const isInsightsPage = pathname === "/insights";
+
   return (
     <nav className="border-b backdrop-blur-sm bg-background/50 sticky top-0 z-50">
       <div className="max-w-[1200px] mx-auto px-6">
@@ -17,7 +21,9 @@ export function Navbar() {
             </Link>
           </div>
           <Button>
-            <Link href="/insights">Insights</Link>
+            <Link href={isInsightsPage ? "/" : "/insights"}>
+              {isInsightsPage ? "Dashboard" : "Insights"}
+            </Link>
             <ArrowRight />
           </Button>
         </div>
