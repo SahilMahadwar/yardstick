@@ -114,18 +114,22 @@ export async function GET(request: NextRequest): Promise<Response> {
       .sort({ amount: -1 })
       .lean();
 
-    if (!largestDoc) {
-      throw new Error("No transactions found");
-    }
-
-    const largestTransaction = transformTransaction(largestDoc);
-
     const summary: TransactionSummary = {
       totalTransactions: totalStats[0]?.totalTransactions || 0,
       totalAmount: totalStats[0]?.totalAmount || 0,
       averageAmount: totalStats[0]?.averageAmount || 0,
       mostFrequentCategory,
-      largestTransaction,
+      largestTransaction: largestDoc
+        ? transformTransaction(largestDoc)
+        : {
+            _id: "0",
+            amount: 0,
+            description: "",
+            date: new Date(),
+            category: TransactionCategory.OTHER,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
     };
 
     const response: TransactionApiResponse = {

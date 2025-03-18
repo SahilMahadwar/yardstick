@@ -113,14 +113,10 @@ export default function DashboardPage() {
       <main className="max-w-[1200px] mx-auto px-6 py-8">
         <div className="space-y-10">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {summary && (
-              <>
-                <TotalExpensesCard summary={summary} />
-                <AverageExpenseCard summary={summary} />
-                <LargestExpenseCard summary={summary} />
-                <FrequentCategoryCard summary={summary} />
-              </>
-            )}
+            <TotalExpensesCard summary={summary ?? undefined} />
+            <AverageExpenseCard summary={summary ?? undefined} />
+            <LargestExpenseCard summary={summary ?? undefined} />
+            <FrequentCategoryCard summary={summary ?? undefined} />
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
