@@ -16,7 +16,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
@@ -25,7 +24,8 @@ import {
 
 import { cn } from "@/lib/utils";
 import { transactionSchema } from "@/lib/validations";
-import { TransactionFormProps } from "@/types/transaction";
+import { TransactionCategory, TransactionFormProps } from "@/types/transaction";
+import { CategorySelect } from "./category-select";
 
 export function TransactionForm({
   transaction,
@@ -38,6 +38,7 @@ export function TransactionForm({
       amount: transaction?.amount || 0,
       description: transaction?.description || "",
       date: transaction?.date || new Date(),
+      category: transaction?.category || TransactionCategory.OTHER,
     },
   });
 
@@ -72,6 +73,24 @@ export function TransactionForm({
               <FormLabel>Description</FormLabel>
               <FormControl>
                 <Input placeholder="Enter description" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="category"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Category</FormLabel>
+              <FormControl>
+                <CategorySelect
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  error={form.formState.errors.category?.message}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
