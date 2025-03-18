@@ -1,7 +1,7 @@
 import { TransactionCategory } from "@/types/transaction";
-import { Schema, model, models } from "mongoose";
+import { Document, Schema, model, models } from "mongoose";
 
-export interface ITransaction {
+export interface ITransaction extends Document {
   amount: number;
   description: string;
   date: Date;

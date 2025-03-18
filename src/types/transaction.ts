@@ -1,4 +1,5 @@
 import { transactionSchema } from "@/lib/validations";
+import { Document } from "mongoose";
 import { z } from "zod";
 
 export enum TransactionCategory {
@@ -12,17 +13,23 @@ export enum TransactionCategory {
   OTHER = "Other",
 }
 
-// Extended schema
-export type Transaction = z.infer<typeof transactionSchema> & {
-  _id: string;
-  category: TransactionCategory;
+// Base transaction type from Zod schema
+export type BaseTransaction = z.infer<typeof transactionSchema>;
+
+// MongoDB document interface
+export interface ITransaction extends Document, BaseTransaction {
   createdAt: Date;
   updatedAt: Date;
+}
+
+// API transaction type
+export type Transaction = Omit<ITransaction, keyof Document> & {
+  _id: string;
 };
 
-export type CreateTransactionRequest = z.infer<typeof transactionSchema>;
+export type CreateTransactionRequest = BaseTransaction;
 
-export type UpdateTransactionRequest = Partial<CreateTransactionRequest>;
+export type UpdateTransactionRequest = Partial<BaseTransaction>;
 
 export type TransactionApiResponse = {
   success: boolean;

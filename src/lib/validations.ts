@@ -1,10 +1,6 @@
 import { TransactionCategory } from "@/types/transaction";
 import { z } from "zod";
 
-// Convert enum to union type for Zod
-const categoryValues = Object.values(TransactionCategory);
-type CategoryType = (typeof categoryValues)[number];
-
 export const transactionSchema = z.object({
   amount: z
     .number({
@@ -22,12 +18,13 @@ export const transactionSchema = z.object({
     required_error: "Date is required",
     invalid_type_error: "Invalid date format",
   }),
-  category: z.enum(categoryValues as [CategoryType, ...CategoryType[]], {
+  category: z.nativeEnum(TransactionCategory, {
     required_error: "Category is required",
     invalid_type_error: "Invalid category",
   }),
 });
 
+// Extract the inferred type
 export type TransactionFormData = z.infer<typeof transactionSchema>;
 
 export type ValidationError = {
@@ -35,16 +32,16 @@ export type ValidationError = {
   message: string;
 };
 
-export function formatZodError(error: z.ZodError) {
+export function formatZodError(error: z.ZodError): ValidationError[] {
   return error.errors.map((err) => ({
-    path: err.path,
+    path: err.path.map(String), // Convert all path segments to strings
     message: err.message,
   }));
 }
 
 // API Response Types
-export type TransactionResponse = {
+export type TransactionResponse<T = unknown> = {
   success: boolean;
-  data?: any;
+  data?: T;
   error?: string | ValidationError[];
 };
